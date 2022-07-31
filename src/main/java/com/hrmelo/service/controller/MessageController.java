@@ -21,13 +21,14 @@ public class MessageController {
 
     @MessageMapping("/newUser")
     public Message greeting(Message message) throws JsonProcessingException {
-        LOGGER.info(message.getUsername());
+        LOGGER.info("Connecting user {}", message.getUsername());
         messageService.send(new Message(message.getUsername(), "connected"));
         return new Message(message.getUsername(), "connected");
     }
 
     @MessageMapping("/message")
     public Message send(Message message) throws JsonProcessingException {
+        LOGGER.info("Sending message {}", message);
         messageService.send(new Message(message.getUsername(), message.getText()));
         return new Message(message.getUsername(), message.getText());
     }

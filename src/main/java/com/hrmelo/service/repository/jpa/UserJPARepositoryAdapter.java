@@ -6,8 +6,6 @@ import com.hrmelo.service.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
 @Component
 public class UserJPARepositoryAdapter implements UserRepository {
 

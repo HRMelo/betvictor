@@ -1,9 +1,12 @@
 package com.hrmelo.service.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.hrmelo.service.domain.Message;
+import com.hrmelo.service.domain.User;
 import com.hrmelo.service.model.dto.MonitorDto;
 import com.hrmelo.service.model.dto.UserDto;
 import com.hrmelo.service.repository.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -22,24 +25,33 @@ public class UserService {
 
     private final WebSocketService webSocketService;
 
-    public UserService(UserRepository repository, WebSocketService webSocketService) {
+    private final ModelMapper mapper;
+
+    public UserService(UserRepository repository, WebSocketService webSocketService, ModelMapper mapper) {
         this.repository = repository;
         this.webSocketService = webSocketService;
+        this.mapper = mapper;
     }
 
     public void save(UserDto userDto) throws JsonProcessingException {
-        UserDto user = repository.findByUsername(userDto.getUsername());
-        MonitorDto.OperationEnum operation;
-        if(!StringUtils.hasText(user.getId())) {
-            operation = INSERTED;
-            user.setUsername(userDto.getUsername());
-        } else {
-            operation = UPDATED;
+        UserDto userDtoFound = repository.findByUsername(userDto.getUsername());
+        User userFound = mapper.map(userDtoFound, User.class);
+
+        Message newMessage = mapper.map(userDto.getMessages().get(0), Message.class);
+        userFound.addMessage(newMessage);
+
+        if(!StringUtils.hasText(userFound.getId())) {
+            userFound.setUsername(userDto.getUsername());
         }
 
-        user.addMessage(userDto.getMessages().get(0));
+        UserDto userToSave = mapper.map(userFound, UserDto.class);
+        final UserDto userSaved = repository.save(userToSave);
 
-        final UserDto userSaved = repository.save(user);
-        webSocketService.send(new MonitorDto(format(MESSAGE, Instant.now(), userSaved.getId(), operation)));
+        final MonitorDto monitorDto = new MonitorDto(format(
+                MESSAGE,
+                Instant.now(),
+                userSaved.getId(),
+                !StringUtils.hasText(userFound.getId()) ? INSERTED : UPDATED));
+        webSocketService.send(monitorDto);
     }
 }

@@ -1,22 +1,13 @@
-package com.hrmelo.service.model.dto;
+package com.hrmelo.service.domain;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDto {
+public class User {
 
     private String id;
     private String username;
-    private List<MessageDto> messages;
-
-    public UserDto() {
-    }
-
-    public UserDto(String username, MessageDto message) {
-        this.username = username;
-        this.messages = new ArrayList<>();
-        this.messages.add(message);
-    }
+    private List<Message> messages;
 
     public String getId() {
         return id;
@@ -34,11 +25,18 @@ public class UserDto {
         this.username = username;
     }
 
-    public List<MessageDto> getMessages() {
+    public List<Message> getMessages() {
         return messages;
     }
 
-    public void setMessages(List<MessageDto> messages) {
+    public void setMessages(List<Message> messages) {
         this.messages = messages;
+    }
+
+    public void addMessage(Message messageDto) {
+        if(null == messages) {
+            this.messages = new ArrayList<>();
+        }
+        this.messages.add(messageDto);
     }
 }
