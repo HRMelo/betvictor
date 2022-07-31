@@ -1,0 +1,19 @@
+spring:
+    datasource:
+        url: jdbc:mysql://localhost:3306/products
+        username: root
+        password: example
+    jpa:
+        hibernate:
+            ddl-auto: create-drop
+
+management:
+    endpoint:
+        health:
+          show-details: always
+
+broker:
+    host: localhost
+    port: 61613
+    username: guest
+    password: guest

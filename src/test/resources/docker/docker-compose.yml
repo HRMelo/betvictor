@@ -1,0 +1,21 @@
+version: '3.1'
+
+services:
+  rabbitmq:
+    image: hrmmelo/rabbitmq:latest
+    container_name: rabbit
+    ports:
+      - 61613:61613
+      - 15674:15674
+      - 15672:15672
+  db:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+      MYSQL_DATABASE: products
+    ports:
+      - 3306:3306
+    container_name: mysql
